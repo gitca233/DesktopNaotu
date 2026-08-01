@@ -2,7 +2,7 @@
  * 路径辅助类
  */
 import { app } from "electron";
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, readFileSync } from "fs";
 import { join } from "path";
 import { sConfigFile, sLogsDir, sBackupDir } from "../define";
 
@@ -48,8 +48,41 @@ export function getLogDirectoryPath(): string {
 }
 
 /**
+ * 获取默认的备份目录（用户数据目录下的 backup）
+ */
+export function getDefaultBackupDirectoryPath(): string {
+  return join(getUserDataDir(), sBackupDir);
+}
+
+/**
  * 获取备份目录
+ *
+ * 优先使用配置文件中 backupPath 指定的目录（可自由设置），
+ * 否则使用默认的备份目录。
+ * 若指定目录创建失败（如无权限），回退到默认备份目录。
  */
 export function getBackupDirectoryPath(): string {
-  return getPath(sBackupDir);
+  const defaultPath = getDefaultBackupDirectoryPath();
+
+  let backupPath = "";
+  try {
+    const configPath = getConfigFilePath();
+    if (existsSync(configPath)) {
+      const model = JSON.parse(readFileSync(configPath, "utf8"));
+      backupPath = model.backupPath || "";
+    }
+  } catch (error) {}
+
+  const target = backupPath || defaultPath;
+
+  try {
+    if (!existsSync(target)) mkdirSync(target, { recursive: true });
+    return target;
+  } catch (error) {
+    console.warn(
+      `create backup directory failed: ${target}, fallback to ${defaultPath}`
+    );
+    if (!existsSync(defaultPath)) mkdirSync(defaultPath, { recursive: true });
+    return defaultPath;
+  }
 }

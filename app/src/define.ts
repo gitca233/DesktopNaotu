@@ -74,7 +74,7 @@ Thanks:
 /**
  * 当前配置文件的版本
  */
-export let sConfigVersion = "v0.1.2";
+export let sConfigVersion = "v0.1.3";
 
 /**
  * 支持的语言
@@ -82,8 +82,13 @@ export let sConfigVersion = "v0.1.2";
 export type Languages = "en" | "zh-CN" | "zh-TW" | "de";
 
 /**
- * 支持的扩展名
+ * 支持的扩展名（保存）
  */
 export let arrExtensions: string[] = ["km"];
+
+/**
+ * 打开文件时支持的扩展名
+ */
+export let arrOpenExtensions: string[] = ["km", "xmind", "mm"];
 
 //#endregion

@@ -76,6 +76,9 @@ function doCloseFile() {
   // 若已保存，则直接初始化
   initRoot();
 
+  // 通知启动首页隐藏
+  window.dispatchEvent(new CustomEvent("naotu-home-hide"));
+
   showFileName("");
 
   logger.info(`关闭文件: "${naotuBase.getCurrentKm()}"`);

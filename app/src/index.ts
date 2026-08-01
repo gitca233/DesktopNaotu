@@ -3,13 +3,15 @@ import { logger } from "./core/logger";
 import { I18n } from "./core/i18n";
 import { naotuMenu } from "./lib/menu";
 import { naotuConf } from "./core/conf";
-import { openFileByDrop, openKm } from "./lib/file";
+import { openKm } from "./lib/file";
 import { saveDialog } from "./lib/dialog";
 import { monitorExitRequest } from "./lib/exit";
 import { naotuBase } from "./lib/base";
 import { onSelectedNodeItem, hasData } from "./lib/minder";
 import * as remote from "@electron/remote";
 import { shortcutDialog } from "./ui/shortcut";
+import { ipcRenderer } from "electron";
+import { showHome } from "./ui/home";
 
 // 进入即记录日志
 logger.info("ipcRender init");
@@ -17,8 +19,13 @@ logger.info("ipcRender init");
 // 初始化渲染菜单
 naotuMenu.render();
 
-// 开启拖动打开文件的功能
-openFileByDrop();
+// 监听主进程通过文件关联（双击文件 / 拖到 Dock）发来的打开请求
+ipcRenderer.on("open-file", (event, filePath) => {
+  if (typeof filePath === "string" && /\.(km|xmind|mm)$/i.test(filePath)) {
+    logger.info(`receive open-file from main: ${filePath}`);
+    openKm(filePath);
+  }
+});
 
 // 监听退出请求
 monitorExitRequest();
@@ -66,12 +73,22 @@ $(function() {
     let argv = remote.process.argv;
     logger.info(`remote.process.argv: ${argv}`);
 
+    let fileOpened = false;
     if (argv.length >= 2) {
-      let filePath = argv[1] as string;
+      for (let i = 1; i < argv.length; i++) {
+        let filePath = argv[i] as string;
 
-      if (filePath.indexOf("km") > -1) {
-        openKm(filePath);
+        if (/\.(km|xmind|mm)$/i.test(filePath)) {
+          openKm(filePath);
+          fileOpened = true;
+          break;
+        }
       }
+    }
+
+    // 未通过参数/文件关联打开任何文件时，显示启动首页（备份目录文件列表）
+    if (!fileOpened) {
+      showHome();
     }
   }
 });

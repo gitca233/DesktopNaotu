@@ -1,14 +1,16 @@
 import * as remote from "@electron/remote";
-import { sExportTitle, arrExtensions } from "../define";
+import { sExportTitle, arrExtensions, arrOpenExtensions } from "../define";
 import { naotuBase } from "./base";
 import { saveKm, openKm } from "./file";
 import { naotuConf } from "../core/conf";
 import { join, basename } from "path";
-import { getUserDataDir } from "../core/path";
+import { getUserDataDir, getBackupDirectoryPath } from "../core/path";
 import { I18n } from "../core/i18n";
 import { logger } from "../core/logger";
 import { exportFile } from "./window";
 import { getDefaultPath } from "./minder";
+import { exportMindmap } from "./mindmap";
+import { writeText } from "../core/io";
 
 /**
  * 打开脑图文件
@@ -19,7 +21,7 @@ import { getDefaultPath } from "./minder";
 export function openDialog() {
   if (naotuBase.HasSaved()) {
     // 已经保存了，本窗口打开
-    remote.dialog.showOpenDialog({ filters: [{ name: sExportTitle, extensions: arrExtensions }] })
+    remote.dialog.showOpenDialog({ filters: [{ name: sExportTitle, extensions: arrOpenExtensions }] })
       .then(result => {
         let fileNames = result.filePaths
         if (!fileNames) return;
@@ -100,6 +102,60 @@ export function setSavePath() {
         if (fileNames) {
           // 更新配置文件
           conf.defSavePath = fileNames[0];
+          naotuConf.save(conf);
+        }
+      })
+  } catch (ex) {
+    logger.error(ex);
+  }
+}
+
+/**
+ * 另存为 FreeMind 格式 (.mm)
+ *
+ * 行为：将当前脑图导出为 FreeMind XML，写入用户选择的 .mm 文件
+ */
+export function saveMindmapAs() {
+  let newPath = join(getUserDataDir(), `${minder.getRoot().data.text}.mm`);
+
+  // 如果有，通过当前文件路径，生成一个新的文件路径
+  let srcPath = naotuBase.getCurrentKm();
+  if (srcPath) {
+    let rootPath = srcPath.replace(basename(srcPath), "");
+    newPath = getDefaultPath(rootPath); // 生成一个文件的地址
+  }
+
+  remote.dialog.showSaveDialog(
+    {
+      title: I18n.__("sSaveKm"),
+      defaultPath: newPath,
+      filters: [{ name: "FreeMind", extensions: ["mm"] }]
+    })
+    .then(result => {
+      let filePath = result.filePath
+      if (!filePath) return; // cancel save
+
+      // 强制 .mm 扩展名
+      if (!/\.mm$/i.test(filePath)) filePath += ".mm";
+
+      writeText(filePath, exportMindmap(minder.exportJson()));
+      naotuBase.OnSaved();
+    })
+}
+
+/**
+ * 重选备份目录
+ */
+export function setBackupPath() {
+  try {
+    let conf = naotuConf.getModel();
+
+    remote.dialog.showOpenDialog({ properties: ["openDirectory"], defaultPath: getBackupDirectoryPath() })
+      .then(result => {
+        let fileNames = result.filePaths
+        if (fileNames) {
+          // 更新配置文件
+          conf.backupPath = fileNames[0];
           naotuConf.save(conf);
         }
       })

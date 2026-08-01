@@ -6,8 +6,10 @@ import {
   openDialog,
   saveDialog,
   saveAsDialog,
+  saveMindmapAs,
   exportDialog,
-  setSavePath
+  setSavePath,
+  setBackupPath
 } from "./dialog";
 import {
   openFileInFolder,
@@ -107,6 +109,10 @@ class NaotuMenu {
           accelerator: "CmdOrCtrl+E",
           click: exportDialog
         },
+        {
+          label: I18n.__("miSaveAsMm"), // 另存为 FreeMind 格式 (.mm)
+          click: saveMindmapAs
+        },
         { type: "separator" },
         {
           label: I18n.__("miAutoSave"), // 自动保存
@@ -119,6 +125,11 @@ class NaotuMenu {
           label: I18n.__("miSavePath"), // 重选自动保存的目录
           accelerator: "CmdOrCtrl+R",
           click: setSavePath
+        },
+        {
+          label: I18n.__("miBackupPath"), // 重选备份目录
+          accelerator: "CmdOrCtrl+Alt+R",
+          click: setBackupPath
         },
         { type: "separator" },
         {

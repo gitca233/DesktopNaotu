@@ -6,14 +6,17 @@
   "scripts": {
     "build": "node build.js",
     "start": "electron .",
-    "pack": "node build.js && electron-packager ./ DesktopNaotu --platform=darwin --arch=arm64 --out=../OutApp --icon=app/static/favicon.icns --asar --overwrite --prune --ignore=\"(.git|screenshot|doc|bower_components|test-capture\\.js)\" && codesign --force --deep --sign - --entitlements entitlements.plist ../OutApp/DesktopNaotu-darwin-arm64/DesktopNaotu.app",
-    "packintel": "node build.js && electron-packager ./ DesktopNaotu --platform=darwin --arch=x64 --out=../OutApp --icon=app/static/favicon.icns --asar --overwrite --prune --ignore=\"(.git|screenshot|doc|bower_components|test-capture\\.js)\" && codesign --force --deep --sign - --entitlements entitlements.plist ../OutApp/DesktopNaotu-darwin-arm64/DesktopNaotu.app"
+    "pack": "node build.js && electron-packager ./ DesktopNaotu --platform=darwin --arch=arm64 --out=../OutApp --icon=app/static/favicon.icns --asar --overwrite --prune --extend-info=build/Info.plist --ignore=\"(.git|screenshot|doc|bower_components|test-capture\\.js)\" && codesign --force --deep --sign - --entitlements entitlements.plist ../OutApp/DesktopNaotu-darwin-arm64/DesktopNaotu.app",
+    "packintel": "node build.js && electron-packager ./ DesktopNaotu --platform=darwin --arch=x64 --out=../OutApp --icon=app/static/favicon.icns --asar --overwrite --prune --extend-info=build/Info.plist --ignore=\"(.git|screenshot|doc|bower_components|test-capture\\.js)\" && codesign --force --deep --sign - --entitlements entitlements.plist ../OutApp/DesktopNaotu-darwin-arm64/DesktopNaotu.app"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NaoTu/DesktopNaotu.git"
   },
-  "keywords": ["mind", "naotu"],
+  "keywords": [
+    "mind",
+    "naotu"
+  ],
   "author": "'Jack' <'topcss@gmail.com'>",
   "license": "GPL-2.0",
   "bugs": {
@@ -23,6 +26,7 @@
   "dependencies": {
     "@electron/remote": "^2.1.1",
     "ejs": "^3.1.10",
+    "jszip": "^3.10.1",
     "moment": "^2.30.1",
     "winston": "^3.15.0"
   },

@@ -47,6 +47,7 @@ function concat(files, dst) {
 }
 
 console.log(">>> 1/4 清空 dist 结构...");
+mkdirp(dist);
 for (const f of fs.readdirSync(dist)) {
   rmrf(path.join(dist, f));
 }

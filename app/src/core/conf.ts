@@ -1,5 +1,5 @@
 // 配置文件辅助类
-import { getConfigFilePath, getBackupDirectoryPath } from "./path";
+import { getConfigFilePath, getDefaultBackupDirectoryPath } from "./path";
 import { existsSync } from "fs";
 import { app } from "electron";
 import { writeText, readText } from "./io";
@@ -24,6 +24,11 @@ class NaotuConfig {
    * 默认保存的目录
    */
   defSavePath?: string;
+
+  /**
+   * 备份目录（可自由设置）
+   */
+  backupPath?: string;
 
   /**
    * 最近使用文件列表
@@ -66,7 +71,8 @@ class NaotuConfig {
   //#region methods
   constructor(
     locale: Languages,
-    defSavePath: string,
+    defSavePath: string | null,
+    backupPath: string | null,
     isAutoSave: boolean,
     recentMaxNum: number,
     recently: IRecentlyItem[],
@@ -76,7 +82,8 @@ class NaotuConfig {
     version: string
   ) {
     this.locale = locale;
-    this.defSavePath = defSavePath;
+    this.defSavePath = defSavePath || undefined;
+    this.backupPath = backupPath || undefined;
     this.isAutoSave = isAutoSave;
     this.recentMaxNum = recentMaxNum;
     this.recently = recently;
@@ -105,6 +112,7 @@ class NaotuConfig {
 
     let lang = confJson.locale as Languages;
     let defSavePath = confJson.defSavePath as string;
+    let backupPath = confJson.backupPath as string;
     let isAutoSave = confJson.isAutoSave as boolean;
     let recentMaxNum = confJson.recentMaxNum as number;
     let recently = confJson.recently as IRecentlyItem[];
@@ -116,6 +124,7 @@ class NaotuConfig {
     return new NaotuConfig(
       lang,
       defSavePath,
+      backupPath,
       isAutoSave,
       recentMaxNum,
       recently,
@@ -195,7 +204,11 @@ class DesktopConfig implements IDesktopConfig {
     if (oldModel.version !== newModel.version) {
       if (oldModel.isAutoSave) newModel.isAutoSave = oldModel.isAutoSave;
       if (oldModel.locale) newModel.locale = oldModel.locale;
-      if (oldModel.defSavePath) newModel.defSavePath = oldModel.defSavePath;
+      if (oldModel.backupPath) newModel.backupPath = oldModel.backupPath;
+      // 若旧配置的自动保存目录就是旧的默认备份目录，则清空，改为跟随新的备份目录
+      if (oldModel.defSavePath && oldModel.defSavePath !== getDefaultBackupDirectoryPath()) {
+        newModel.defSavePath = oldModel.defSavePath;
+      }
       if (oldModel.recentMaxNum) newModel.recentMaxNum = oldModel.recentMaxNum;
       if (oldModel.ifSaveLogToDisk) newModel.ifSaveLogToDisk = oldModel.ifSaveLogToDisk;
       if (oldModel.editorWindowWidth) newModel.editorWindowWidth = oldModel.editorWindowWidth;
@@ -213,7 +226,8 @@ class DesktopConfig implements IDesktopConfig {
 
     return new NaotuConfig(
       lang,
-      getBackupDirectoryPath(),
+      null,                          // defSavePath：默认不指定，自动保存使用 getBackupDirectoryPath()
+      "/desktopnaotu/backup",        // backupPath：默认备份目录，可自由设置
       true,
       5,
       [],

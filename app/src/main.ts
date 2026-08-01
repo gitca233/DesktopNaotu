@@ -9,6 +9,10 @@ import { sIndexUrl } from "./define";
 (() => {
   let safeExit = false;
 
+  // 记录 macOS 下通过双击文件（或拖到 Dock 图标）打开的文件
+  // 应用已运行时由 open-file 事件送达；应用启动后转发给渲染进程
+  let pendingOpenFile: string | null = null;
+
   // 初始化 remote 模块（替代已移除的 electron.remote）
   remoteMain.initialize();
 
@@ -88,6 +92,14 @@ import { sIndexUrl } from "./define";
       }
     });
 
+    // 窗口加载完成后，补发启动期间收到的 open-file 请求
+    mainWindow.webContents.on("did-finish-load", () => {
+      if (pendingOpenFile && mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send("open-file", pendingOpenFile);
+        pendingOpenFile = null;
+      }
+    });
+
     mainWindow.on("close", e => {
       if (!safeExit) {
         if (mainWindow) {
@@ -122,6 +134,23 @@ import { sIndexUrl } from "./define";
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   app.on("ready", createWindow);
+
+  // macOS：双击文件 / 拖文件到 Dock 图标时触发。
+  // 若该文件同时出现在启动参数中（双击启动），由渲染进程的 argv 扫描打开，这里跳过避免重复。
+  app.on("open-file", (event, filePath) => {
+    event.preventDefault();
+
+    const inArgv = process.argv.slice(1).some(a => a === filePath);
+    if (inArgv) return;
+
+    logger.info(`open-file event: ${filePath}`);
+
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send("open-file", filePath);
+    } else {
+      pendingOpenFile = filePath;
+    }
+  });
 
   // Quit when all windows are closed.
   app.on("window-all-closed", () => {

@@ -135,6 +135,11 @@ The desktop version of Mind Mapping is a localized version of Baidu Mind Mapping
 - Refactored the build script (`build.js`); no longer depends on gulp 3, which cannot run on modern Node
 - Fixed a blank-screen issue caused by jQuery not attaching to the global scope under nodeIntegration
 - Packaging now targets darwin-arm64 and ad-hoc signs the app with JIT entitlements
+- Added support for opening **XMind** files (`.xmind`), covering both the new format (`content.json`) and the legacy format (`content.xml`)
+- Added support for opening **FreeMind / MindManager** files (`.mm`)
+- Added support for opening files by double-clicking them or dropping them onto the app icon (macOS file association via `open-file` event)
+- Added a start-up home screen listing your mind maps in the default folder (configurable via "Re-select the automatically saved directory")
+- Added "Save as FreeMind (.mm)" to export maps in the portable FreeMind XML format
 
 ### Special Sponsors
 
@@ -161,8 +166,10 @@ Open Document Node, Inspiration Unfold</p>
 
 - Basic functions of Baidu Mind Mapping
 - Operation of local km files
-- Support dragging open km files
-- Support association to open km files
+- Support opening local **xmind** files (`.xmind`)
+- Support opening local **FreeMind / MindManager** files (`.mm`)
+- Support association to open km/xmind/mm files (double-click to open)
+- Support saving as **FreeMind** format (`.mm`)
 - Support for automatic saving
 - [Provide **Baidu Mind Mapping** File Download Method](doc/Help.md)
 - [Provide **ProcessOn** Mind Map Download Method](doc/Help.md)
