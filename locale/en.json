@@ -21,6 +21,8 @@
   "homeEmpty": "No mind map files yet",
   "homeEmptyHint": "Click \"New\" to start creating",
   "homeOpenDir": "Reveal in Finder",
+  "miOtherStylesTab": "Other Styles",
+  "miCompactMode": "Compact Mode",
   "miAutoSave": "A&uto Save",
   "miSavePath": "Re-select the automatically saved directory(&R)",
   "miBackupPath": "Re-select the backup directory(&B)",

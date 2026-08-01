@@ -19,6 +19,8 @@
   "homeEmpty": "暫無腦圖文件",
   "homeEmptyHint": "點擊「新建」開始創作",
   "homeOpenDir": "在訪達中打開目錄",
+  "miOtherStylesTab": "其他樣式",
+  "miCompactMode": "緊湊模式",
   "miAutoSave": "自動保存",
   "miSavePath": "重選自動保存的目錄(&R)",
   "miBackupPath": "重選備份目錄(&B)",

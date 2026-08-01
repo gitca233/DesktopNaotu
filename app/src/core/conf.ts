@@ -56,6 +56,16 @@ class NaotuConfig {
   ifSaveLogToDisk?: boolean;
 
   /**
+   * 是否开启紧凑模式（缩小节点间距的紧凑布局）
+   */
+  compactMode?: boolean;
+
+  /**
+   * 紧凑模式对应的基础主题（不带 -compact 后缀，用于还原）
+   */
+  compactBase?: string;
+
+  /**
    * 编辑器窗口的大小
    * 每次退出自动记录，下次启动后按此大小打开窗口
    */
@@ -79,6 +89,8 @@ class NaotuConfig {
     ifSaveLogToDisk: boolean,
     editorWindowWidth: number,
     editorWindowHeight: number,
+    compactMode: boolean,
+    compactBase: string,
     version: string
   ) {
     this.locale = locale;
@@ -90,6 +102,8 @@ class NaotuConfig {
     this.ifSaveLogToDisk = ifSaveLogToDisk;
     this.editorWindowWidth = editorWindowWidth;
     this.editorWindowHeight = editorWindowHeight;
+    this.compactMode = compactMode;
+    this.compactBase = compactBase || undefined;
     this.version = version;
   }
 
@@ -119,6 +133,8 @@ class NaotuConfig {
     let ifSaveLogToDisk = confJson.ifSaveLogToDisk as boolean;
     let editorWindowWidth = confJson.editorWindowWidth as number;
     let editorWindowHeight = confJson.editorWindowHeight as number;
+    let compactMode = confJson.compactMode as boolean;
+    let compactBase = confJson.compactBase as string;
     let version = confJson.version as string;
 
     return new NaotuConfig(
@@ -131,6 +147,8 @@ class NaotuConfig {
       ifSaveLogToDisk,
       editorWindowWidth,
       editorWindowHeight,
+      compactMode,
+      compactBase,
       version
     );
   }
@@ -214,6 +232,8 @@ class DesktopConfig implements IDesktopConfig {
       if (oldModel.editorWindowWidth) newModel.editorWindowWidth = oldModel.editorWindowWidth;
       if (oldModel.editorWindowHeight) newModel.editorWindowHeight = oldModel.editorWindowHeight;
       if (oldModel.recently) newModel.recently = oldModel.recently;
+      if (oldModel.compactMode) newModel.compactMode = oldModel.compactMode;
+      if (oldModel.compactBase) newModel.compactBase = oldModel.compactBase;
 
       this.save(newModel);
     }
@@ -234,6 +254,8 @@ class DesktopConfig implements IDesktopConfig {
       false,
       1000,     // 默认窗口宽度
       800,      // 默认窗口高度
+      false,    // 紧凑模式默认关闭
+      undefined,
       sConfigVersion
     );
   }

@@ -21,6 +21,8 @@
   "homeEmpty": "暂无脑图文件",
   "homeEmptyHint": "点击「新建」开始创作",
   "homeOpenDir": "在访达中打开目录",
+  "miOtherStylesTab": "其他样式",
+  "miCompactMode": "紧凑模式",
   "miAutoSave": "自动保存",
   "miSavePath": "重选自动保存的目录(&R)",
   "miExit": "退出(&X)",

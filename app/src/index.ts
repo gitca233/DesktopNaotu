@@ -12,6 +12,8 @@ import * as remote from "@electron/remote";
 import { shortcutDialog } from "./ui/shortcut";
 import { ipcRenderer } from "electron";
 import { showHome } from "./ui/home";
+import { enableSmoothZoom } from "./lib/zoom";
+import { initOtherStylesTab } from "./lib/compact";
 
 // 进入即记录日志
 logger.info("ipcRender init");
@@ -46,6 +48,12 @@ angular
 
 $(function() {
   if (minder != null) {
+    // 平滑缩放（接管 Ctrl/Cmd + 滚轮的离散+动画缩放）
+    enableSmoothZoom();
+
+    // 注入"其他样式"标签页（紧凑模式开关）
+    initOtherStylesTab();
+
     // auto saving
     minder.on("contentchange", function(argv: any) {
       // 操作完成之后才触发事件

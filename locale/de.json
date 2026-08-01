@@ -19,6 +19,8 @@
   "homeEmpty": "Noch keine Mindmap-Dateien",
   "homeEmptyHint": "Klicken Sie auf „Neu“, um zu beginnen",
   "homeOpenDir": "Im Finder anzeigen",
+  "miOtherStylesTab": "Andere Stile",
+  "miCompactMode": "Kompakter Modus",
   "miAutoSave": "A&uto Save",
   "miSavePath": "Re-select the automatically saved directory(&R)",
   "miBackupPath": "Re-select the backup directory(&B)",
