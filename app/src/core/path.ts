@@ -1,7 +1,7 @@
 /**
  * 路径辅助类
  */
-import { app, remote } from "electron";
+import { app } from "electron";
 import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
 import { sConfigFile, sLogsDir, sBackupDir } from "../define";
@@ -15,7 +15,8 @@ export function getUserDataDir() {
 
   try {
     // 获取用户目录
-    userData = (app || remote.app).getPath("userData");
+    // 主进程使用 electron.app；渲染进程（app 未定义）时，延迟加载 @electron/remote
+    userData = (app || require("@electron/remote").app).getPath("userData");
 
     // 若没有用户目录，则创建
     if (!existsSync(userData)) mkdirSync(userData);

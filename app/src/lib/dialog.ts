@@ -1,4 +1,4 @@
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import { sExportTitle, arrExtensions } from "../define";
 import { naotuBase } from "./base";
 import { saveKm, openKm } from "./file";

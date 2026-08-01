@@ -1,4 +1,4 @@
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import { I18n } from "../core/i18n";
 import { naotuBase } from "./base";
 import { copy, writeText, writeBuffer } from "../core/io";

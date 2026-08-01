@@ -1,5 +1,6 @@
 // --> ipcMain 主线程使用的代码
 import { app, BrowserWindow, globalShortcut, Menu, ipcMain } from "electron";
+import * as remoteMain from "@electron/remote/main";
 import { logger } from "./core/logger";
 import { naotuConf } from "./core/conf";
 import { sIndexUrl } from "./define";
@@ -7,6 +8,9 @@ import { sIndexUrl } from "./define";
 // Main Method
 (() => {
   let safeExit = false;
+
+  // 初始化 remote 模块（替代已移除的 electron.remote）
+  remoteMain.initialize();
 
   // 开始记录日志
   logger.info(`app start.`);
@@ -58,6 +62,9 @@ import { sIndexUrl } from "./define";
     // and load the index.html of the app.
     logger.info(`open url ${sIndexUrl} `);
     mainWindow.loadURL(sIndexUrl);
+
+    // 允许渲染进程使用 @electron/remote
+    remoteMain.enable(mainWindow.webContents);
 
     globalShortcut.register("CmdOrCtrl+Shift+D", () => {
       if (mainWindow) {
@@ -147,7 +154,7 @@ import { sIndexUrl } from "./define";
   logger.info(`process.argv: ${process.argv}`);
 
   // 监听与渲染进程的通信
-  ipcMain.on("reqaction", (event: Event, arg: string) => {
+  ipcMain.on("reqaction", (event: any, arg: string) => {
     switch (arg) {
       case "exit":
         logger.info("app exit successfully!");

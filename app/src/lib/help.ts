@@ -1,5 +1,5 @@
 import { sLicenseUrl, sAboutText, sVersionUrl, sReleasesUrl } from "../define";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import { I18n } from "../core/i18n";
 import { logger } from "../core/logger";
 import { version } from "../version";

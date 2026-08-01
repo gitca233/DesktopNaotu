@@ -8,7 +8,7 @@ import { saveDialog } from "./lib/dialog";
 import { monitorExitRequest } from "./lib/exit";
 import { naotuBase } from "./lib/base";
 import { onSelectedNodeItem, hasData } from "./lib/minder";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import { shortcutDialog } from "./ui/shortcut";
 
 // 进入即记录日志

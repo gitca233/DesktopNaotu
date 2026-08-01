@@ -19,6 +19,11 @@
   <!-- bower:js -->
   <!-- endbower -->
   <script src="js/jquery.min.js"></script>
+  <script>
+    // 在 nodeIntegration 环境下，jQuery 的 UMD 会走 CommonJS 分支而不设置全局变量，
+    // 导致 bootstrap 等后续脚本找不到 jQuery。这里手动把 jQuery 挂到全局。
+    window.jQuery = window.$ = require("./js/jquery.min.js");
+  </script>
   <script src="js/vendor.js"></script>
   <script>
     var exports = {};

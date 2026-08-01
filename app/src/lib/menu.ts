@@ -1,5 +1,5 @@
 import { I18n } from "../core/i18n";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import { naotuConf } from "../core/conf";
 import { openRecently, clearRecently, autoSave } from "./recently";
 import {

@@ -207,7 +207,8 @@ class DesktopConfig implements IDesktopConfig {
   }
 
   getTemplate(): NaotuConfig {
-    let locale = app.getLocale();
+    // 主进程使用 electron.app；渲染进程（app 未定义）时，延迟加载 @electron/remote
+    let locale = (app || require("@electron/remote").app).getLocale();
     const lang = (locale as Languages) || "en";
 
     return new NaotuConfig(

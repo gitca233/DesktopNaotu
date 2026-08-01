@@ -1,6 +1,7 @@
 import { naotuBase } from "./base";
 import { I18n } from "../core/i18n";
-import { remote, MenuItemConstructorOptions } from "electron";
+import { MenuItemConstructorOptions } from "electron";
+import * as remote from "@electron/remote";
 import { getAppInstance } from "./electron";
 import { join } from "path";
 import { naotuConf } from "../core/conf";

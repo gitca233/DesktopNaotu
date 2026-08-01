@@ -6,3 +6,9 @@ OutApp/
 .electron/
 package-lock.json
 *.log
+
+# macOS
+.DS_Store
+
+# electron-packager 默认输出目录
+DesktopNaotu-darwin-arm64/

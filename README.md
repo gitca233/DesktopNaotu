@@ -6,6 +6,17 @@
 
 桌面版脑图是基于百度脑图的本地化版本，帮助你在没有互联网环境的情况下，依然可以使用脑图工具。
 
+> **Apple Silicon 适配版**：本 fork 在原项目基础上完成适配，支持 Apple Silicon（M1/M2/M3…）芯片原生 arm64 运行，并将 Electron 从 11 升级到 33，已实测可在新版 macOS（Ventura / Sonoma 及以上）上正常使用。
+
+### 更新说明（本 fork）
+
+- 支持 Apple Silicon（arm64）原生运行，修复旧版在 M 系列 Mac 上无法启动的问题
+- Electron 11 → 33，兼容新版 macOS
+- 将已废弃的 `remote` 模块替换为官方推荐的 `@electron/remote`
+- 重构构建脚本（`build.js`），不再依赖已无法在新版 Node 上运行的 gulp 3
+- 修复 jQuery 在 nodeIntegration 环境下不挂全局导致界面空白的问题
+- 打包默认输出 darwin-arm64，并自动完成带 JIT 权限的签名
+
 ### 如何下载
 
 - 方法1：通过 [**百度云下载**](http://pan.baidu.com/s/1jHNBL7C)
@@ -15,7 +26,8 @@
 
 | 操作系统  | 位数    |  对应文件 |  大小  | 支持情况 |
 | --------  | -----: | -----: | :----  | -- |
-| MacOS | 64位 | DesktopNaotu-macOS-x64 | < 50M | 支持全部功能 |
+| MacOS (Intel) | 64位 | DesktopNaotu-macOS-x64 | < 50M | 支持全部功能 |
+| MacOS (Apple Silicon) | 64位 | DesktopNaotu-darwin-arm64 | 约 240M | 支持全部功能 |
 | Linux | 64位 | DesktopNaotu-linux-x64 | < 50M | 支持全部功能 |
 | Windows 7/10 | 64位 | DesktopNaotu-win32-x64 | < 50M | 支持全部功能 |
 | Windows 7/10 | 32位 | DesktopNaotu-win32-ia32 | < 50M | 支持全部功能 |
@@ -47,49 +59,48 @@
 
 ### 如何编译
 
-#### 1. 安装所有依赖
+> 注：本项目已重构构建脚本，不再依赖 gulp 3 / 旧版工具链，以下为新版构建方式。
+
+#### 1. 安装依赖
 
 ```bash
-# 安装必备工具
-npm install -g gulp
-npm install -g bower
-
-# 自动安装依赖
+# 安装 npm 依赖（Electron 33、@electron/remote 等）
 npm install
-bower install
+
+# 安装前端库（jQuery / Angular / kityminder 等）
+npx bower install --allow-root
 ```
 
-#### 2. 更换graceful-fs版本（对于Node `v10.x`及以上版本）
+> 若下载 Electron 二进制超时（国内网络），先设置镜像：
+>
+> ```bash
+> export ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
+> ```
+
+#### 2. 编译
 
 ```bash
-npm install graceful-fs
-
-# 如果仍出现"ReferenceError: primordials is not defined" 的错误，
-# 则删掉cnpm安装的旧版本
-rm -rf node_modules/_graceful-fs@3.0.12@graceful-fs
-
-# 如果某个子模块依赖旧版本graceful-fs，则请根据报错信息，
-# 切换到该模块目录下更新。
-cd node_modules/<PATH_TO_MODULE_USING_DEPRECATED_GRACEFUL_FS>
-npm install graceful-fs@4.x
+npm run build
 ```
 
-#### 3. 更换`@types/node`版本
+#### 3. 打包 macOS（Apple Silicon arm64）
 
 ```bash
-npm install @types/node@12.x
+npm run pack
 ```
 
-#### 4. 开始编译
+打包产物位于 `../OutApp/DesktopNaotu-darwin-arm64/DesktopNaotu.app`。
+
+#### 4. 本地调试运行
 
 ```bash
-gulp
+npm start
 ```
 
-#### 5. 测试运行
+#### 5. 其他系统打包
 
 ```bash
-npm run demo
+npm run packintel   # macOS Intel (x64)
 ```
 
 ### 联系我们
@@ -114,6 +125,17 @@ Code released under the [GPL-2.0 License](LICENSE).
 
 The desktop version of Mind Mapping is a localized version of Baidu Mind Mapping, which helps you to use Mind Mapping Tool without Internet.
 
+> **Apple Silicon build**: This fork adapts the original project for Apple Silicon (M1/M2/M3…) Macs, running natively on arm64 with the Electron runtime upgraded from 11 to 33. Tested and working on recent macOS (Ventura / Sonoma and later).
+
+### Update notes (this fork)
+
+- Native arm64 support for Apple Silicon, fixing the launch failure of the old build on M-series Macs
+- Electron 11 → 33 for compatibility with recent macOS
+- Replaced the deprecated `remote` module with the officially recommended `@electron/remote`
+- Refactored the build script (`build.js`); no longer depends on gulp 3, which cannot run on modern Node
+- Fixed a blank-screen issue caused by jQuery not attaching to the global scope under nodeIntegration
+- Packaging now targets darwin-arm64 and ad-hoc signs the app with JIT entitlements
+
 ### Special Sponsors
 
 <p align="center"><a href="https://documentnode.io/?utm_source=github&utm_medium=sponsor&utm_campaign=desktopnaotu" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/2252451/65103852-16463380-da02-11e9-8b58-bea4a84c2e31.png" alt="Document Node logo"></a><br>
@@ -128,7 +150,8 @@ Open Document Node, Inspiration Unfold</p>
 
 | Operating System | Bit | Corresponding File | Size | Support |
 | --------  | -----: | -----: | :----  | -- |
-| MacOS | 64 bit | DesktopNaotu - macOS - x64 | < 50M | Supports all functions |
+| MacOS (Intel) | 64 bit | DesktopNaotu-macOS-x64 | < 50M | Supports all functions |
+| MacOS (Apple Silicon) | 64 bit | DesktopNaotu-darwin-arm64 | ~240M | Supports all functions |
 | Linux | 64 bit | DesktopNaotu-linux-x64 | < 50M | Supports all functions |
 | Windows 7/10 | 64 bit | DesktopNaotu-win32-x64 | < 50M | Supports all functions |
 | Windows 7/10 | 32 bits | DesktopNaotu-win32-ia32 | < 50M | Supports all functions |
@@ -161,48 +184,48 @@ Open Document Node, Inspiration Unfold</p>
 
 ### How to compile
 
+> Note: This project has been refactored and no longer depends on gulp 3 / the legacy toolchain. The following is the new build process.
+
 #### 1. Install dependencies
 
 ```bash
-# Install prerequisites
-npm install -g gulp
-npm install -g bower
-
-# Install dependencies
+# Install npm dependencies (Electron 33, @electron/remote, etc.)
 npm install
-bower install
+
+# Install front-end libraries (jQuery / Angular / kityminder, etc.)
+npx bower install --allow-root
 ```
 
-#### 2. Change graceful-fs version (For Node `v10.x` or newer)
+> If downloading the Electron binary times out (e.g. in mainland China), set the mirror first:
+>
+> ```bash
+> export ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
+> ```
+
+#### 2. Build
 
 ```bash
-npm install graceful-fs
-
-# If error "ReferenceError: primordials is not defined" still occurs, remove the old edition installed by cnpm
-rm -rf node_modules/_graceful-fs@3.0.12@graceful-fs
-
-# If a submodule relies on old graceful-fs, please follow the log, locate to its directory, 
-# then manually update
-cd node_modules/<PATH_TO_MODULE_USING_DEPRECATED_GRACEFUL_FS>
-npm install graceful-fs@4.x
+npm run build
 ```
 
-#### 3. Change `@types/node` to v12.x
+#### 3. Package for macOS (Apple Silicon arm64)
 
 ```bash
-npm install @types/node@12.x
+npm run pack
 ```
 
-#### 4. Build
+The packaged app is at `../OutApp/DesktopNaotu-darwin-arm64/DesktopNaotu.app`.
+
+#### 4. Run in development
 
 ```bash
-gulp
+npm start
 ```
 
-#### 5. Try running
+#### 5. Package for other platforms
 
 ```bash
-npm run demo
+npm run packintel   # macOS Intel (x64)
 ```
 
 ### Contact us
